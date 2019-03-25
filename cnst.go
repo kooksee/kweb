@@ -1,5 +1,5 @@
-package cnst
+package kweb
 
 const ServiceName = "kweb"
 const EnvPrefix = "kweb"
-const CurPath = "$PWD/config"
+const CurPath = "$PWD/kdata"

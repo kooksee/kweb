@@ -1,4 +1,4 @@
-package cmd
+package kweb
 
 import (
 	"fmt"
@@ -124,7 +124,11 @@ func bindFlagsLoadViper(cmd *cobra.Command, args []string) error {
 
 	homeDir := viper.GetString(HomeFlag)
 	viper.Set(HomeFlag, homeDir)
-	viper.SetConfigName("config")                         // name of config file (without extension)
+	viper.SetConfigType("toml")
+	viper.SetConfigName("config") // name of config file (without extension)
+	viper.AddConfigPath("/etc/kweb/")
+	viper.AddConfigPath("$HOME/.kweb")
+	viper.AddConfigPath(".")
 	viper.AddConfigPath(homeDir)                          // search root directory
 	viper.AddConfigPath(filepath.Join(homeDir, "config")) // search root directory /config
 
