@@ -6,36 +6,21 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 const (
-	HomeFlag     = "home"
-	TraceFlag    = "trace"
-	OutputFlag   = "output"
-	EncodingFlag = "encoding"
+	HomeFlag  = "home"
+	TraceFlag = "trace"
 )
 
-// PrepareBaseCmd is meant for tendermint and other servers
 func PrepareBaseCmd(cmd *cobra.Command, envPrefix, defaultHome string) Executor {
 	cobra.OnInitialize(func() { initEnv(envPrefix) })
 	cmd.PersistentFlags().StringP(HomeFlag, "", defaultHome, "directory for config and data")
 	cmd.PersistentFlags().Bool(TraceFlag, false, "print out full stack trace on errors")
 	cmd.PersistentPreRunE = concatCobraCmdFuncs(bindFlagsLoadViper, cmd.PersistentPreRunE)
 	return Executor{cmd, os.Exit}
-}
-
-// PrepareMainCmd is meant for client side libs that want some more flags
-//
-// This adds --encoding (hex, btc, base64) and --output (text, json) to
-// the command.  These only really make sense in interactive commands.
-func PrepareMainCmd(cmd *cobra.Command, envPrefix, defaultHome string) Executor {
-	cmd.PersistentFlags().StringP(EncodingFlag, "e", "hex", "Binary encoding (hex|b64|btc)")
-	cmd.PersistentFlags().StringP(OutputFlag, "o", "text", "Output format (text|json)")
-	cmd.PersistentPreRunE = concatCobraCmdFuncs(validateOutput, cmd.PersistentPreRunE)
-	return PrepareBaseCmd(cmd, envPrefix, defaultHome)
 }
 
 // initEnv sets to use ENV variables if set.
@@ -139,17 +124,6 @@ func bindFlagsLoadViper(cmd *cobra.Command, args []string) error {
 	} else if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
 		// ignore not found error, return other errors
 		return err
-	}
-	return nil
-}
-
-func validateOutput(cmd *cobra.Command, args []string) error {
-	// validate output format
-	output := viper.GetString(OutputFlag)
-	switch output {
-	case "text", "json":
-	default:
-		return errors.Errorf("Unsupported output format: %s", output)
 	}
 	return nil
 }
