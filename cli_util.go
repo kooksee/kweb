@@ -15,7 +15,7 @@ const (
 	TraceFlag = "trace"
 )
 
-func PrepareBaseCmd(cmd *cobra.Command, envPrefix, defaultHome string) Executor {
+func (t *app) PrepareBaseCmd(cmd *cobra.Command, envPrefix, defaultHome string) Executor {
 	cobra.OnInitialize(func() { initEnv(envPrefix) })
 	cmd.PersistentFlags().StringP(HomeFlag, "", defaultHome, "directory for config and data")
 	cmd.PersistentFlags().Bool(TraceFlag, false, "print out full stack trace on errors")
