@@ -1,5 +1,5 @@
 package kweb
 
-const ServiceName = "kweb"
-const EnvPrefix = "kweb"
-const CurPath = "$PWD/kdata"
+const serviceName = "kweb"
+const envPrefix = "kweb"
+const curPath = "$PWD/kdata"
