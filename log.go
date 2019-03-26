@@ -10,16 +10,10 @@ func (t *app) InitLog() {
 	zerolog.TimestampFieldName = "time"
 	zerolog.LevelFieldName = "level"
 	zerolog.MessageFieldName = "msg"
+	zerolog.SetGlobalLevel(if_(t.IsDebug, zerolog.DebugLevel, zerolog.ErrorLevel).(zerolog.Level))
 
-	zerolog.SetGlobalLevel(zerolog.DebugLevel)
-	if !t.IsDebug {
-		zerolog.SetGlobalLevel(zerolog.ErrorLevel)
-	}
-
-	t.Ip = IpAddress()
-	if t.Ip == "" {
-		panic("获取不到ip地址")
-	}
+	t.Ip = ipAddress()
+	assertBool(t.Ip == "", "获取不到ip地址")
 
 	log.Logger = log.
 		Output(zerolog.ConsoleWriter{Out: os.Stdout}).
