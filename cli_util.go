@@ -18,9 +18,9 @@ const (
 func (t *app) PrepareBaseCmd(cmd *cobra.Command, envPrefix, defaultHome string) Executor {
 	cobra.OnInitialize(func() { initEnv(envPrefix) })
 	cmd.PersistentFlags().StringP(HomeFlag, "", defaultHome, "directory for config and data")
-	cmd.PersistentFlags().Bool(TraceFlag, false, "print out full stack trace on errors")
+	cmd.PersistentFlags().Bool(TraceFlag, false, "print out full stack trace on errors.toml")
 	cmd.PersistentPreRunE = concatCobraCmdFuncs(bindFlagsLoadViper, cmd.PersistentPreRunE)
-	return Executor{cmd, os.Exit}
+	return Executor{Command: cmd, Exit: os.Exit}
 }
 
 // initEnv sets to use ENV variables if set.
@@ -122,7 +122,7 @@ func bindFlagsLoadViper(cmd *cobra.Command, args []string) error {
 		// stderr, so if we redirect output to json file, this doesn't appear
 		// fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	} else if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-		// ignore not found error, return other errors
+		// ignore not found error, return other errors.toml
 		return err
 	}
 	return nil
