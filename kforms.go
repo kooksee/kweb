@@ -1,11 +1,13 @@
 package kweb
 
 import (
+	"fmt"
 	"github.com/BurntSushi/toml"
 	"github.com/antonmedv/expr"
 	"github.com/kooksee/kweb/internal/g"
 	"github.com/kooksee/kweb/internal/validator"
 	"io"
+	"strings"
 )
 
 type KForm struct {
@@ -25,7 +27,13 @@ func (t *KForms) FromPath(cfg string) {
 
 	for k := range _dt {
 		for j := range _dt[k] {
-			p, err := expr.Parse(_dt[k][j][0], expr.Env(&validator.KValidator{}))
+			var _fn []expr.OptionFn
+
+			if !strings.HasPrefix(j, "__") {
+				_fn = append(_fn, expr.Env(&validator.KValidator{}))
+			}
+
+			p, err := expr.Parse(_dt[k][j][0], _fn...)
 			g.AssertErr(err, "规则[%s]解析失败", _dt[k][j][0])
 			t.data[k][j] = &KForm{Parser: p, Msg: _dt[k][j][1]}
 		}
@@ -37,11 +45,21 @@ func (t *KForms) Validator(form string, r io.Reader) string {
 	g.AssertErr(g.Json.NewDecoder(r).Decode(&_dt), "json解析失败")
 
 	for k, v := range t.data[form] {
-		if _d, ok := _dt[k]; ok {
-			if _s := validator.KValidatorOf(_d).Do(v.Parser); _s != "" {
-				return _s
-			}
+		_s := ""
+		_b := true
+
+		if strings.HasPrefix(k, "__") {
+			_b, _s = validator.KValidatorOf(_dt).Eval(v.Parser)
 		}
+
+		if _d, ok := _dt[k]; ok {
+			_b, _s = validator.KValidatorOf(_d).Do(v.Parser)
+		}
+
+		if !_b {
+			return g.If(_s == "", v.Msg, fmt.Sprintf(v.Msg+", Err:%s", _s)).(string)
+		}
+
 	}
 
 	return ""

@@ -3,6 +3,7 @@ package kweb
 import (
 	"fmt"
 	"github.com/BurntSushi/toml"
+	"github.com/kooksee/kweb/internal/g"
 )
 
 type KError struct {
@@ -16,7 +17,7 @@ type KErrors struct {
 
 func (t *KErrors) FromPath(cfg string) {
 	_, err := toml.DecodeFile(cfg, &t.data)
-	assertErr(err, "文件[%s]解析失败", cfg)
+	g.AssertErr(err, "文件[%s]解析失败", cfg)
 }
 
 func (t *KErrors) Get(ns, name string, args ...interface{}) *KError {

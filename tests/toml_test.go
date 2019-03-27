@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/BurntSushi/toml"
 	"github.com/antonmedv/expr"
+	"github.com/gin-gonic/gin"
 	"github.com/kooksee/g/assert"
+	"github.com/kooksee/kweb/internal/g"
 	"io/ioutil"
 	"testing"
 )
@@ -39,3 +41,22 @@ func TestName1(t *testing.T) {
 	assert.MustNotError(err)
 	assert.P(out)
 }
+
+func Test2(t *testing.T) {
+	r := gin.Default()
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+	g.Assert(r.Run(":8888"))
+}
+
+
+//https://www.baidu.com/link?url=V8RO3dPz-yIEbjaomd69xA7Q1B3IbpNDB1pkP5IDEFZ392ihsiNkrXC8Dq-TgKcMeySMHYYq0fiETM-RCLD5pHuQHOKP1Ol4KK6XNTY0Lc3
+
+
+//V8RO3dPz
+// yIEbjaomd69xA7Q1B3IbpNDB1pkP5IDEFZ392ihsiNkrXC8Dq
+// TgKcMeySMHYYq0fiETM
+// RCLD5pHuQHOKP1Ol4KK6XNTY0Lc3

@@ -15,16 +15,20 @@ type KValidator struct {
 	err  string
 }
 
-func (t *KValidator) Do(node expr.Node) string {
-	out, err := expr.Run(node, t)
+func (t *KValidator) do(node expr.Node, dt interface{}) (bool, string) {
+	out, err := expr.Run(node, dt)
 	g.AssertErr(err, "校验规则执行失败")
 
 	ok, isBool := out.(bool)
 	g.AssertBool(!isBool, "校验规则结果类型错误")
 
-	if !ok {
-		return t.err
-	}
+	return ok, t.err
+}
 
-	return ""
+func (t *KValidator) Do(node expr.Node) (bool, string) {
+	return t.do(node, t)
+}
+
+func (t *KValidator) Eval(node expr.Node) (bool, string) {
+	return t.do(node, t.data)
 }
